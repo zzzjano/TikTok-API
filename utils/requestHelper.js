@@ -1,9 +1,10 @@
 import { getSessionParams } from './sessionParams.js';
-import { getCookies } from './cookieManager.js';
+import { getCookies, extractTokensFromCookies } from './cookieManager.js';
 import { createNewTorSession, tor } from '../services/torService.js';
 import { requestQueue } from './requestQueue.js';
-import xbogus from 'xbogus';
 import { tiktok_errors } from './errorCodes.js';
+import signBogus from './xbogus.js';
+import signGnarly from './xgnarly.js';
 
 // Function to execute a TikTok API request with retries and error handling
 export const executeTikTokRequest = async (baseUrl, queryStringParams, maxRetries = 3, timeout = 5000) => {
@@ -11,16 +12,61 @@ export const executeTikTokRequest = async (baseUrl, queryStringParams, maxRetrie
         const nonRetryStatusCodes = [10221, 10222, 10202, 10203, 10204];
         const params = await getSessionParams();
         const cookies = await getCookies();
+        const { msToken, odinId } = await extractTokensFromCookies();
         
-        let url = `${baseUrl}?${new URLSearchParams({ ...params, ...queryStringParams }).toString()}`;
+        // Add msToken and odinId to params if they exist
+        if (msToken) params.msToken = msToken;
+        if (odinId) params.odinId = odinId;
+        
+        const queryString = new URLSearchParams({ ...params, ...queryStringParams }).toString();
+        let url = `${baseUrl}?${queryString}`;
         const useragent = params.browser_version;
-        const tiktok_xbogus = xbogus(url, useragent);
+        const body = '';
         
-        url += `&X-Bogus=${tiktok_xbogus}`;
+        // Generate X-Bogus and X-Gnarly
+        const xBogus = signBogus(
+            queryString,
+            body,
+            useragent,
+            Math.floor(Date.now() / 1000)
+        );
+        
+        const xGnarly = signGnarly(
+            queryString,
+            body,
+            useragent,
+            0,           // envcode
+            '5.1.1'      // version
+        );
+        
+        url += `&X-Bogus=${xBogus}&X-Gnarly=${xGnarly}`;
+        
+        console.log('X-Bogus:', xBogus, `(${xBogus.length} chars)`);
+        console.log('X-Gnarly:', xGnarly, `(${xGnarly.length} chars)`);
+        
+        // Sanitize cookies: remove all line breaks, carriage returns, and non-printable characters
+        const sanitizedCookies = cookies
+            .replace(/[\r\n\t]/g, '') // Remove \r, \n, \t
+            .replace(/[^\x20-\x7E]/g, '') // Remove non-printable ASCII characters
+            .trim();
+        
         const headers = {
             "User-Agent": useragent,
-            "cookie": cookies.replace(/\n/g, '')
+            "Accept": "*/*",
+            "Accept-Language": "en-GB,en-US;q=0.7,en;q=0.3",
+            "Referer": "https://www.tiktok.com/explore",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "cookie": sanitizedCookies
         };
+        
+        console.log('=== REQUEST DEBUG ===');
+        console.log('Full URL:', url);
+        console.log('User-Agent:', useragent);
+        console.log('Cookies length:', cookies.length);
+        console.log('Using Tor:', process.env.USE_TOR);
+        console.log('====================');
 
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
@@ -31,7 +77,24 @@ export const executeTikTokRequest = async (baseUrl, queryStringParams, maxRetrie
                     throw [response.status, 400, `Invalid or non-existent value. Received 400 error from TikTok.`];
                 }
 
+                // Check if response is empty string - this indicates blocking/captcha
+                if (typeof response.data === 'string' && response.data.trim() === '') {
+                    console.error('Received empty response - possible IP blocking or captcha challenge');
+                    throw new Error('Empty response from TikTok - possible blocking');
+                }
+
                 const statusCode = response.data.statusCode;
+                
+                // If statusCode is undefined or null, treat as success (some endpoints don't return statusCode)
+                if (statusCode === undefined || statusCode === null) {
+                    console.log('=== RESPONSE DEBUG ===');
+                    console.log('Status:', response.status);
+                    console.log('Response data type:', typeof response.data);
+                    console.log('Response data:', JSON.stringify(response.data).substring(0, 500));
+                    console.log('Response keys:', Object.keys(response.data));
+                    console.log('=====================');
+                    return {data: response.data};
+                }
                 
                 if (nonRetryStatusCodes.includes(statusCode)) {
                     const errorMessage = tiktok_errors[statusCode] || 'Unknown error';
@@ -40,6 +103,7 @@ export const executeTikTokRequest = async (baseUrl, queryStringParams, maxRetrie
 
                 if (statusCode !== 0) {
                     const errorMessage = tiktok_errors[statusCode] || 'Unknown error';
+                    console.log(response.data);
                     throw [response.status, statusCode, `TikTok API Error: ${errorMessage}`];
                 }
 

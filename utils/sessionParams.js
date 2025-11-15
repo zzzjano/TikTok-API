@@ -1,7 +1,7 @@
 // Generate random session parameters
 export const getSessionParams = async () => {
-    const userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X)";
-    const app_language = "en";
+    const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36";
+    const app_language = "en-GB";
     const browser_language = "en-GB";
     const platform = "Win32";
     const timezone = "Europe/Warsaw";
@@ -9,6 +9,7 @@ export const getSessionParams = async () => {
     const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
     return {
+        "WebIdLastTime": "1763164403",
         "aid": "1988",
         "app_language": app_language,
         "app_name": "tiktok_web",
@@ -17,7 +18,9 @@ export const getSessionParams = async () => {
         "browser_online": "true",
         "browser_platform": platform,
         "browser_version": userAgent,
+        "channel": "tiktok_web",
         "cookie_enabled": "true",
+        "data_collection_enabled": "true",
         "device_id": getRandomInt(10**18, 10**19 - 1).toString(),
         "device_platform": "web_pc",
         "focus_state": "true",
@@ -26,11 +29,17 @@ export const getSessionParams = async () => {
         "is_fullscreen": "false",
         "is_page_visible": "true",
         "language": app_language,
-        "os": "ios",
+        "os": "windows",
+        "priority_region": "PL",
+        "referer": "https://www.tiktok.com/explore",
         "region": "PL",
-        "screen_height": getRandomInt(600, 1080).toString(),
-        "screen_width": getRandomInt(800, 1920).toString(),
+        "root_referer": "https://www.tiktok.com/explore",
+        "screen_height": "1080",
+        "screen_width": "1920",
         "tz_name": timezone,
+        "user_is_login": "true",
+        "verifyFp": "verify_mhzilhve_F8yQntdt_h3pV_4vb3_9o9z_y772MhlILxuj",
+        "video_encoding": "mp4",
         "webcast_language": app_language
     };
 };

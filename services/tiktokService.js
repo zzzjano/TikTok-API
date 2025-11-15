@@ -7,9 +7,32 @@ export const getTikTokProfile = async (username) => {
     return await executeTikTokRequest(tiktokEndpoints.getUserProfile, queryStringParams);
 };
 
-// Fetch TikTok video
-export const getTikTokVideo = async (videoId) => {
-    const queryStringParams = { itemId: videoId };
+// Extract video ID (awemeId) from either plain ID or full TikTok URL
+const extractVideoIdFromInput = (input) => {
+    if (!input || typeof input !== 'string') {
+        throw new Error('Video identifier must be a non-empty string');
+    }
+
+    // If it looks like a URL, try to extract the numeric id
+    const urlPattern = /https?:\/\/\S+/;
+    const awemePattern = /video\/(\d+)/;
+
+    if (urlPattern.test(input)) {
+        const match = input.match(awemePattern);
+        if (!match) {
+            throw new Error('Could not extract video id from provided URL');
+        }
+        return match[1];
+    }
+
+    // Otherwise treat it as a raw id
+    return input;
+};
+
+// Fetch TikTok video – accepts either plain videoId or full TikTok URL
+export const getTikTokVideo = async (videoIdentifier) => {
+    const itemId = extractVideoIdFromInput(videoIdentifier);
+    const queryStringParams = { itemId };
     return await executeTikTokRequest(tiktokEndpoints.getVideoDetail, queryStringParams);
 };
 

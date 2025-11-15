@@ -1,13 +1,21 @@
-import { tor_s } from '../config/torConfig.js';
-import { SocksProxyAgent } from "socks-proxy-agent";
+import { tor_s, torProxyAgent } from '../config/torConfig.js';
 import axios from 'axios';
-const torProxyAgent = new SocksProxyAgent("socks://127.0.0.1:9050");
+import dotenv from 'dotenv';
 
-export const tor = axios.create({
+dotenv.config();
+
+const useTor = (process.env.USE_TOR || 'true').toLowerCase() === 'true';
+
+export const tor = useTor ? axios.create({
     httpsAgent: torProxyAgent,
     httpAgent: torProxyAgent
-});
+}) : axios.create();
 
 export const createNewTorSession = async () => {
+    // If Tor is disabled or control port is disabled, skip IP change
+    if (!useTor || !tor_s || typeof tor_s.torNewSession !== 'function') {
+        return;
+    }
+
     await tor_s.torNewSession();
 };
