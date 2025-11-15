@@ -41,9 +41,6 @@ export const executeTikTokRequest = async (baseUrl, queryStringParams, maxRetrie
         
         url += `&X-Bogus=${xBogus}&X-Gnarly=${xGnarly}`;
         
-        console.log('X-Bogus:', xBogus, `(${xBogus.length} chars)`);
-        console.log('X-Gnarly:', xGnarly, `(${xGnarly.length} chars)`);
-        
         // Sanitize cookies: remove all line breaks, carriage returns, and non-printable characters
         const sanitizedCookies = cookies
             .replace(/[\r\n\t]/g, '') // Remove \r, \n, \t
@@ -60,13 +57,6 @@ export const executeTikTokRequest = async (baseUrl, queryStringParams, maxRetrie
             "Sec-Fetch-Site": "same-origin",
             "cookie": sanitizedCookies
         };
-        
-        console.log('=== REQUEST DEBUG ===');
-        console.log('Full URL:', url);
-        console.log('User-Agent:', useragent);
-        console.log('Cookies length:', cookies.length);
-        console.log('Using Tor:', process.env.USE_TOR);
-        console.log('====================');
 
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
@@ -87,12 +77,6 @@ export const executeTikTokRequest = async (baseUrl, queryStringParams, maxRetrie
                 
                 // If statusCode is undefined or null, treat as success (some endpoints don't return statusCode)
                 if (statusCode === undefined || statusCode === null) {
-                    console.log('=== RESPONSE DEBUG ===');
-                    console.log('Status:', response.status);
-                    console.log('Response data type:', typeof response.data);
-                    console.log('Response data:', JSON.stringify(response.data).substring(0, 500));
-                    console.log('Response keys:', Object.keys(response.data));
-                    console.log('=====================');
                     return {data: response.data};
                 }
                 
@@ -103,7 +87,6 @@ export const executeTikTokRequest = async (baseUrl, queryStringParams, maxRetrie
 
                 if (statusCode !== 0) {
                     const errorMessage = tiktok_errors[statusCode] || 'Unknown error';
-                    console.log(response.data);
                     throw [response.status, statusCode, `TikTok API Error: ${errorMessage}`];
                 }
 

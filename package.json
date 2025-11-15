@@ -1,15 +1,33 @@
 {
-  "name": "tikapi",
+  "name": "tiktok-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "A secure Node.js API service for fetching TikTok data through Tor network with built-in anonymity and request management",
   "type": "module",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "tiktok",
+    "api",
+    "tor",
+    "proxy",
+    "web-scraping",
+    "anonymous"
+  ],
+  "author": "zzzjano",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zzzjano/TikTok-API.git"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "dependencies": {
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
@@ -18,5 +36,8 @@
     "socks-proxy-agent": "^8.0.4",
     "tor-axios": "^1.0.11",
     "xbogus": "^1.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
   }
 }

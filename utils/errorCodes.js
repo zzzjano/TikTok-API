@@ -1,3 +1,17 @@
+/**
+ * TikTok API Error Codes
+ * 
+ * Comprehensive mapping of TikTok API status codes to human-readable error messages.
+ * Used for error handling and debugging API responses.
+ * 
+ * @module utils/errorCodes
+ */
+
+/**
+ * TikTok error code mappings
+ * @constant
+ * @type {Object.<string, string>}
+ */
 export const tiktok_errors = {
     "0": "OK",
     "450": "CLIENT_PAGE_ERROR",
@@ -37,4 +51,4 @@ export const tiktok_errors = {
     "10231": "VIDEO_GEOFENCE_BLOCK",
     "10404": "FYP_VIDEO_LIST_LIMIT",
     "undefined": "MEDIA_ERROR"
-  }
+};

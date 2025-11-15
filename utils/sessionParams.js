@@ -1,4 +1,20 @@
-// Generate random session parameters
+/**
+ * Session Parameters Generator
+ * 
+ * Generates randomized session parameters for TikTok API requests.
+ * Mimics a real browser session to avoid detection.
+ * 
+ * @module utils/sessionParams
+ */
+
+/**
+ * Generate random session parameters
+ * 
+ * Creates a set of parameters that mimic a real browser session,
+ * including randomized device IDs and history length.
+ * 
+ * @returns {Promise<Object>} Session parameters object
+ */
 export const getSessionParams = async () => {
     const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36";
     const app_language = "en-GB";
@@ -6,6 +22,12 @@ export const getSessionParams = async () => {
     const platform = "Win32";
     const timezone = "Europe/Warsaw";
 
+    /**
+     * Generate random integer between min and max (inclusive)
+     * @param {number} min - Minimum value
+     * @param {number} max - Maximum value
+     * @returns {number} Random integer
+     */
     const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
     return {

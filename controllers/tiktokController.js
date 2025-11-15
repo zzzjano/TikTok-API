@@ -1,15 +1,42 @@
+/**
+ * TikTok API Controllers
+ * 
+ * Handles HTTP requests for TikTok API endpoints.
+ * Controllers receive requests, call appropriate services, and return responses.
+ * 
+ * @module controllers/tiktokController
+ */
+
 import { getTikTokProfile, getTikTokVideo, getTikTokUserPosts, getTikTokAwemeId } from '../services/tiktokService.js';
 
-// Helper to pass errors to global error handler
+/**
+ * Helper to pass errors to global error handler
+ * @param {Error} error - Error object to handle
+ * @param {Function} next - Express next function
+ */
 const handleControllerError = (error, next) => {
     if (!error) return next();
     next(error);
 };
 
-// Get TikTok Profile by username
+/**
+ * Get TikTok user profile by username
+ * 
+ * @param {express.Request} req - Express request object
+ * @param {express.Response} res - Express response object
+ * @param {express.NextFunction} next - Express next function
+ * @returns {Promise<void>}
+ */
 export const getProfile = async (req, res, next) => {
     try {
         const { username } = req.params;
+        
+        if (!username || username.trim() === '') {
+            const error = new Error('Username is required');
+            error.statusCode = 400;
+            throw error;
+        }
+        
         const data = await getTikTokProfile(username);
         res.json(data);
     } catch (error) {
@@ -17,6 +44,14 @@ export const getProfile = async (req, res, next) => {
     }
 };
 
+/**
+ * Extract Aweme ID from TikTok URL
+ * 
+ * @param {express.Request} req - Express request object
+ * @param {express.Response} res - Express response object
+ * @param {express.NextFunction} next - Express next function
+ * @returns {Promise<void>}
+ */
 export const getAwemeId = async (req, res, next) => {
     try {
         const { url } = req.query;
@@ -27,11 +62,24 @@ export const getAwemeId = async (req, res, next) => {
     }
 };
 
-// Get TikTok Video by ID or full URL
+/**
+ * Get TikTok video by ID or full URL
+ * 
+ * @param {express.Request} req - Express request object
+ * @param {express.Response} res - Express response object
+ * @param {express.NextFunction} next - Express next function
+ * @returns {Promise<void>}
+ */
 export const getVideo = async (req, res, next) => {
     try {
-        // Single canonical source: path param /videos/:videoIdentifier
         const { videoIdentifier } = req.params;
+        
+        if (!videoIdentifier || videoIdentifier.trim() === '') {
+            const error = new Error('Video identifier is required');
+            error.statusCode = 400;
+            throw error;
+        }
+        
         const data = await getTikTokVideo(videoIdentifier);
         res.json(data);
     } catch (error) {
@@ -39,12 +87,37 @@ export const getVideo = async (req, res, next) => {
     }
 };
 
-// Get TikTok User Posts by secUid
+/**
+ * Get TikTok user posts by secUid
+ * 
+ * @param {express.Request} req - Express request object
+ * @param {express.Response} res - Express response object
+ * @param {express.NextFunction} next - Express next function
+ * @returns {Promise<void>}
+ */
 export const getUserPosts = async (req, res, next) => {
     try {
         const { secUid } = req.params;
         const { cursor = 0, count = 35, coverFormat = 2 } = req.query;
-        const data = await getTikTokUserPosts(secUid, cursor, count, coverFormat);
+        
+        if (!secUid || secUid.trim() === '') {
+            const error = new Error('SecUid is required');
+            error.statusCode = 400;
+            throw error;
+        }
+        
+        // Validate numeric parameters
+        const parsedCursor = parseInt(cursor, 10);
+        const parsedCount = parseInt(count, 10);
+        const parsedCoverFormat = parseInt(coverFormat, 10);
+        
+        if (isNaN(parsedCursor) || isNaN(parsedCount) || isNaN(parsedCoverFormat)) {
+            const error = new Error('Invalid query parameters: cursor, count, and coverFormat must be numbers');
+            error.statusCode = 400;
+            throw error;
+        }
+        
+        const data = await getTikTokUserPosts(secUid, parsedCursor, parsedCount, parsedCoverFormat);
         res.json(data);
     } catch (error) {
         handleControllerError(error, next);
