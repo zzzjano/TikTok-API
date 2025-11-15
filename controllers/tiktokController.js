@@ -7,7 +7,7 @@
  * @module controllers/tiktokController
  */
 
-import { getTikTokProfile, getTikTokVideo, getTikTokUserPosts, getTikTokAwemeId, getTikTokComments } from '../services/tiktokService.js';
+import { getTikTokProfile, getTikTokVideo, getTikTokUserPosts, getTikTokAwemeId, getTikTokComments, getTikTokFollowers, getTikTokFollowings } from '../services/tiktokService.js';
 
 /**
  * Helper to pass errors to global error handler
@@ -154,6 +154,82 @@ export const getComments = async (req, res, next) => {
         }
         
         const data = await getTikTokComments(awemeId, parsedCursor, parsedCount);
+        res.json(data);
+    } catch (error) {
+        handleControllerError(error, next);
+    }
+};
+
+/**
+ * Get TikTok user followers
+ * 
+ * @param {express.Request} req - Express request object
+ * @param {express.Response} res - Express response object
+ * @param {express.NextFunction} next - Express next function
+ * @returns {Promise<void>}
+ */
+export const getFollowers = async (req, res, next) => {
+    try {
+        const { secUid } = req.params;
+        const { maxCursor = 0, minCursor = 0, count = 30, scene = 67 } = req.query;
+        
+        if (!secUid || secUid.trim() === '') {
+            const error = new Error('SecUid is required');
+            error.statusCode = 400;
+            throw error;
+        }
+        
+        // Validate numeric parameters
+        const parsedMaxCursor = parseInt(maxCursor, 10);
+        const parsedMinCursor = parseInt(minCursor, 10);
+        const parsedCount = parseInt(count, 10);
+        const parsedScene = parseInt(scene, 10);
+        
+        if (isNaN(parsedMaxCursor) || isNaN(parsedMinCursor) || isNaN(parsedCount) || isNaN(parsedScene)) {
+            const error = new Error('Invalid query parameters: maxCursor, minCursor, count, and scene must be numbers');
+            error.statusCode = 400;
+            throw error;
+        }
+        
+        const data = await getTikTokFollowers(secUid, parsedMaxCursor, parsedMinCursor, parsedCount, parsedScene);
+        res.json(data);
+    } catch (error) {
+        handleControllerError(error, next);
+    }
+};
+
+/**
+ * Get TikTok user followings (accounts followed by the user)
+ * 
+ * @param {express.Request} req - Express request object
+ * @param {express.Response} res - Express response object
+ * @param {express.NextFunction} next - Express next function
+ * @returns {Promise<void>}
+ */
+export const getFollowings = async (req, res, next) => {
+    try {
+        const { secUid } = req.params;
+        const { maxCursor = 0, minCursor = 0, count = 30, scene = 21 } = req.query;
+        
+        if (!secUid || secUid.trim() === '') {
+            const error = new Error('SecUid is required');
+            error.statusCode = 400;
+            throw error;
+        }
+        
+        // Validate numeric parameters
+        const parsedMaxCursor = parseInt(maxCursor, 10);
+        const parsedMinCursor = parseInt(minCursor, 10);
+        const parsedCount = parseInt(count, 10);
+        const parsedScene = parseInt(scene, 10);
+        
+        if (isNaN(parsedMaxCursor) || isNaN(parsedMinCursor) || isNaN(parsedCount) || isNaN(parsedScene)) {
+            const error = new Error('Invalid query parameters: maxCursor, minCursor, count, and scene must be numbers');
+            error.statusCode = 400;
+            throw error;
+        }
+        
+        const data = await getTikTokFollowings(secUid, parsedMaxCursor, parsedMinCursor, parsedCount, parsedScene);
         res.json(data);
     } catch (error) {
         handleControllerError(error, next);

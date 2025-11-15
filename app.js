@@ -52,6 +52,8 @@ app.get('/', (_req, res) => {
             health: '/health',
             userProfile: '/api/tiktok/users/:username',
             userPosts: '/api/tiktok/users/:secUid/posts',
+            userFollowers: '/api/tiktok/users/:secUid/followers',
+            userFollowing: '/api/tiktok/users/:secUid/following',
             videoDetails: '/api/tiktok/videos/:videoIdentifier',
             videoComments: '/api/tiktok/videos/:awemeId/comments',
             awemeId: '/api/tiktok/awemeid?url=<tiktok_url>'

@@ -8,7 +8,7 @@
  */
 
 import express from 'express';
-import { getProfile, getVideo, getUserPosts, getAwemeId, getComments } from '../controllers/tiktokController.js';
+import { getProfile, getVideo, getUserPosts, getAwemeId, getComments, getFollowers, getFollowings } from '../controllers/tiktokController.js';
 import { validateAwemeUrl } from '../middleware/validateAwemeUrl.js';
 
 const router = express.Router();
@@ -53,5 +53,27 @@ router.get('/awemeid', validateAwemeUrl, getAwemeId);
  * @access Public
  */
 router.get('/videos/:awemeId/comments', getComments);
+
+/**
+ * @route GET /api/tiktok/users/:secUid/followers
+ * @desc Get user followers by secUid
+ * @query maxCursor - Maximum cursor for pagination (default: 0)
+ * @query minCursor - Minimum cursor for pagination (default: 0)
+ * @query count - Number of followers (default: 30)
+ * @query scene - Scene parameter (default: 67)
+ * @access Public
+ */
+router.get('/users/:secUid/followers', getFollowers);
+
+/**
+ * @route GET /api/tiktok/users/:secUid/following
+ * @desc Get user followings (accounts followed by the user) by secUid
+ * @query maxCursor - Maximum cursor for pagination (default: 0)
+ * @query minCursor - Minimum cursor for pagination (default: 0)
+ * @query count - Number of followings (default: 30)
+ * @query scene - Scene parameter (default: 21)
+ * @access Public
+ */
+router.get('/users/:secUid/following', getFollowings);
 
 export default router;

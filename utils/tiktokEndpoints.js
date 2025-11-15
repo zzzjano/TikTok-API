@@ -20,4 +20,6 @@ export const tiktokEndpoints = {
     getUserPosts: 'https://www.tiktok.com/api/post/item_list/',
     /** Comments list endpoint */
     getComments: 'https://www.tiktok.com/api/comment/list/',
+    /** User followers list endpoint */
+    getUserFollowers: 'https://www.tiktok.com/api/user/list/',
 };

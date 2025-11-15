@@ -156,3 +156,47 @@ export const getTikTokComments = async (awemeId, cursor = 0, count = 20) => {
     };
     return await executeTikTokRequest(tiktokEndpoints.getComments, queryStringParams);
 };
+
+/**
+ * Fetch TikTok user followers
+ * 
+ * @param {string} secUid - User's secUid
+ * @param {number} maxCursor - Maximum cursor for pagination
+ * @param {number} minCursor - Minimum cursor for pagination
+ * @param {number} count - Number of followers to retrieve
+ * @param {number} scene - Scene parameter (default: 67 for followers)
+ * @returns {Promise<Object>} Followers data
+ * @throws {Error} If parameters are invalid or request fails
+ */
+export const getTikTokFollowers = async (secUid, maxCursor = 0, minCursor = 0, count = 30, scene = 67) => {
+    const queryStringParams = { 
+        secUid,
+        scene: scene.toString(),
+        maxCursor: maxCursor.toString(), 
+        minCursor: minCursor.toString(),
+        count: count.toString()
+    };
+    return await executeTikTokRequest(tiktokEndpoints.getUserFollowers, queryStringParams);
+};
+
+/**
+ * Fetch TikTok user followings (accounts followed by the user)
+ * 
+ * @param {string} secUid - User's secUid
+ * @param {number} maxCursor - Maximum cursor for pagination
+ * @param {number} minCursor - Minimum cursor for pagination
+ * @param {number} count - Number of followings to retrieve
+ * @param {number} scene - Scene parameter (default: 21 for followings)
+ * @returns {Promise<Object>} Followings data
+ * @throws {Error} If parameters are invalid or request fails
+ */
+export const getTikTokFollowings = async (secUid, maxCursor = 0, minCursor = 0, count = 30, scene = 21) => {
+    const queryStringParams = { 
+        secUid,
+        scene: scene.toString(),
+        maxCursor: maxCursor.toString(), 
+        minCursor: minCursor.toString(),
+        count: count.toString()
+    };
+    return await executeTikTokRequest(tiktokEndpoints.getUserFollowers, queryStringParams);
+};

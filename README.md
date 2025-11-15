@@ -245,7 +245,7 @@ GET /api/tiktok/users/:secUid/posts
 ```
 
 **Parameters:**
-- `secUid` (path, required) - User's secUid
+- `secUid` (path, required) - User's secUid (can be obtained from `/api/tiktok/users/:username` endpoint)
 - `cursor` (query, optional) - Pagination cursor (default: 0)
 - `count` (query, optional) - Number of posts to fetch (default: 35)
 - `coverFormat` (query, optional) - Cover image format (default: 2)
@@ -316,6 +316,70 @@ curl "http://localhost:8083/api/tiktok/videos/7572739107898592542/comments?curso
     "comments": [...],
     "hasMore": true,
     "cursor": "20"
+  }
+}
+```
+
+### 6. Get User Followers
+
+Fetch followers list for a specific user.
+
+```http
+GET /api/tiktok/users/:secUid/followers
+```
+
+**Parameters:**
+- `secUid` (path, required) - User's secUid (can be obtained from `/api/tiktok/users/:username` endpoint)
+- `maxCursor` (query, optional) - Maximum cursor for pagination (default: 0)
+- `minCursor` (query, optional) - Minimum cursor for pagination (default: 0)
+- `count` (query, optional) - Number of followers to fetch (default: 30)
+- `scene` (query, optional) - Scene parameter (default: 67)
+
+**Example:**
+```bash
+curl "http://localhost:8083/api/tiktok/users/MS4wLjABAAAAv7iSuuXDJGDvJkmH_vz1qkDZYo1apxgzaxdBSeIuPiM/followers?maxCursor=0&count=30"
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "statusCode": 0,
+    "userList": [...],
+    "hasMore": true,
+    "maxCursor": "30"
+  }
+}
+```
+
+---
+
+### Get User Following
+
+Retrieves the list of accounts followed by a specific user.
+
+**Endpoint:** `GET /api/tiktok/users/:secUid/following`
+
+**Parameters:**
+- `secUid` (path, required) - User's secUid (can be obtained from `/api/tiktok/users/:username` endpoint)
+- `maxCursor` (query, optional) - Maximum cursor for pagination (default: 0)
+- `minCursor` (query, optional) - Minimum cursor for pagination (default: 0)
+- `count` (query, optional) - Number of followings to fetch (default: 30)
+- `scene` (query, optional) - Scene parameter (default: 21)
+
+**Example:**
+```bash
+curl "http://localhost:8083/api/tiktok/users/MS4wLjABAAAAv7iSuuXDJGDvJkmH_vz1qkDZYo1apxgzaxdBSeIuPiM/following?maxCursor=0&count=30"
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "statusCode": 0,
+    "userList": [...],
+    "hasMore": true,
+    "maxCursor": "30"
   }
 }
 ```
