@@ -26,7 +26,6 @@ A professional Node.js API service for fetching TikTok data with optional Tor ne
 - [API Endpoints](#api-endpoints)
 - [Error Handling](#error-handling)
 - [Security](#security)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## Prerequisites
@@ -79,7 +78,14 @@ cp .env.example .env
 
 4. Configure your `.env` file with appropriate values
 
-5. Add your TikTok cookies to `cookies.txt` (required)
+5. **Add your TikTok cookies** (REQUIRED)
+   - Open TikTok in your browser with a logged-in account
+   - Open Developer Tools (F12)
+   - Go to the Network tab
+   - Navigate to any TikTok page or refresh
+   - Find any request to `www.tiktok.com/api/`
+   - Copy the full `Cookie` header value from the request headers
+   - Paste it into `cookies.txt` file in the project root
 
 6. Start the server
 ```bash
@@ -117,7 +123,22 @@ RETRY_TIMEOUT_MS=5000            # Timeout before retry
 
 ### Cookies Configuration
 
-Create a `cookies.txt` file in the root directory with your TikTok cookies. This is required for the API to work properly.
+**IMPORTANT:** You must provide your own TikTok cookies for the API to work.
+
+1. Log in to TikTok in your browser
+2. Open Developer Tools (F12) → Network tab
+3. Navigate to any TikTok page or refresh
+4. Find a request to `www.tiktok.com/api/` (e.g., `user/detail`, `item/detail`)
+5. In the request headers, copy the entire `Cookie` value
+6. Create a `cookies.txt` file in the project root and paste the cookie string
+
+Example of what to look for in DevTools:
+```
+Request Headers:
+  Cookie: ttwid=1%7C...; msToken=...; odin_tt=...; ...
+```
+
+Copy everything after `Cookie:` and save it to `cookies.txt`
 
 ## Usage
 
@@ -193,10 +214,10 @@ GET /api/tiktok/videos/:videoIdentifier
 **Examples:**
 ```bash
 # Using video ID
-curl http://localhost:8083/api/tiktok/videos/7234567890123456789
+curl http://localhost:8083/api/tiktok/videos/7572739107898592542
 
 # Using full URL
-curl http://localhost:8083/api/tiktok/videos/https://www.tiktok.com/@user/video/7234567890123456789
+curl http://localhost:8083/api/tiktok/videos/https://www.tiktok.com/@user/video/7572739107898592542
 ```
 
 **Response:**
@@ -259,13 +280,43 @@ GET /api/tiktok/awemeid?url=<tiktok_url>
 
 **Example:**
 ```bash
-curl "http://localhost:8083/api/tiktok/awemeid?url=https://www.tiktok.com/@user/video/7234567890123456789"
+curl "http://localhost:8083/api/tiktok/awemeid?url=https://www.tiktok.com/@user/video/7572739107898592542"
 ```
 
 **Response:**
 ```json
 {
   "data": "7234567890123456789"
+}
+```
+
+### 5. Get Video Comments
+
+Fetch comments for a specific video.
+
+```http
+GET /api/tiktok/videos/:awemeId/comments
+```
+
+**Parameters:**
+- `awemeId` (path, required) - Video ID
+- `cursor` (query, optional) - Pagination cursor (default: 0)
+- `count` (query, optional) - Number of comments to fetch (default: 20)
+
+**Example:**
+```bash
+curl "http://localhost:8083/api/tiktok/videos/7572739107898592542/comments?cursor=0&count=20"
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "statusCode": 0,
+    "comments": [...],
+    "hasMore": true,
+    "cursor": "20"
+  }
 }
 ```
 
@@ -332,21 +383,6 @@ TikTok-API/
     ├── xbogus.js             # X-Bogus signature generation
     └── xgnarly.js            # X-Gnarly signature generation
 ```
-
-## Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-Please ensure your code:
-- Follows the existing code style
-- Includes appropriate comments and documentation
-- Doesn't break existing functionality
 
 ## License
 

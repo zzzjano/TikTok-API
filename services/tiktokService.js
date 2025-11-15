@@ -138,3 +138,21 @@ export const getTikTokAwemeId = async (url) => {
         throw newError;
     }
 };
+
+/**
+ * Fetch TikTok video comments
+ * 
+ * @param {string} awemeId - Video ID
+ * @param {number} cursor - Pagination cursor
+ * @param {number} count - Number of comments to retrieve
+ * @returns {Promise<Object>} Comments data
+ * @throws {Error} If parameters are invalid or request fails
+ */
+export const getTikTokComments = async (awemeId, cursor = 0, count = 20) => {
+    const queryStringParams = { 
+        aweme_id: awemeId,
+        cursor: cursor.toString(), 
+        count: count.toString()
+    };
+    return await executeTikTokRequest(tiktokEndpoints.getComments, queryStringParams);
+};

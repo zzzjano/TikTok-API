@@ -53,6 +53,7 @@ app.get('/', (_req, res) => {
             userProfile: '/api/tiktok/users/:username',
             userPosts: '/api/tiktok/users/:secUid/posts',
             videoDetails: '/api/tiktok/videos/:videoIdentifier',
+            videoComments: '/api/tiktok/videos/:awemeId/comments',
             awemeId: '/api/tiktok/awemeid?url=<tiktok_url>'
         },
         documentation: 'https://github.com/zzzjano/TikTok-API'

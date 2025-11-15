@@ -7,7 +7,7 @@
  * @module controllers/tiktokController
  */
 
-import { getTikTokProfile, getTikTokVideo, getTikTokUserPosts, getTikTokAwemeId } from '../services/tiktokService.js';
+import { getTikTokProfile, getTikTokVideo, getTikTokUserPosts, getTikTokAwemeId, getTikTokComments } from '../services/tiktokService.js';
 
 /**
  * Helper to pass errors to global error handler
@@ -118,6 +118,42 @@ export const getUserPosts = async (req, res, next) => {
         }
         
         const data = await getTikTokUserPosts(secUid, parsedCursor, parsedCount, parsedCoverFormat);
+        res.json(data);
+    } catch (error) {
+        handleControllerError(error, next);
+    }
+};
+
+/**
+ * Get TikTok video comments
+ * 
+ * @param {express.Request} req - Express request object
+ * @param {express.Response} res - Express response object
+ * @param {express.NextFunction} next - Express next function
+ * @returns {Promise<void>}
+ */
+export const getComments = async (req, res, next) => {
+    try {
+        const { awemeId } = req.params;
+        const { cursor = 0, count = 20 } = req.query;
+        
+        if (!awemeId || awemeId.trim() === '') {
+            const error = new Error('Aweme ID is required');
+            error.statusCode = 400;
+            throw error;
+        }
+        
+        // Validate numeric parameters
+        const parsedCursor = parseInt(cursor, 10);
+        const parsedCount = parseInt(count, 10);
+        
+        if (isNaN(parsedCursor) || isNaN(parsedCount)) {
+            const error = new Error('Invalid query parameters: cursor and count must be numbers');
+            error.statusCode = 400;
+            throw error;
+        }
+        
+        const data = await getTikTokComments(awemeId, parsedCursor, parsedCount);
         res.json(data);
     } catch (error) {
         handleControllerError(error, next);

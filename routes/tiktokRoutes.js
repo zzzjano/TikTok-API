@@ -8,7 +8,7 @@
  */
 
 import express from 'express';
-import { getProfile, getVideo, getUserPosts, getAwemeId } from '../controllers/tiktokController.js';
+import { getProfile, getVideo, getUserPosts, getAwemeId, getComments } from '../controllers/tiktokController.js';
 import { validateAwemeUrl } from '../middleware/validateAwemeUrl.js';
 
 const router = express.Router();
@@ -44,5 +44,14 @@ router.get('/videos/:videoIdentifier', getVideo);
  * @access Public
  */
 router.get('/awemeid', validateAwemeUrl, getAwemeId);
+
+/**
+ * @route GET /api/tiktok/videos/:awemeId/comments
+ * @desc Get video comments by awemeId
+ * @query cursor - Pagination cursor (default: 0)
+ * @query count - Number of comments (default: 20)
+ * @access Public
+ */
+router.get('/videos/:awemeId/comments', getComments);
 
 export default router;

@@ -18,4 +18,6 @@ export const tiktokEndpoints = {
     getVideoDetail: 'https://www.tiktok.com/api/item/detail/',
     /** User posts endpoint */
     getUserPosts: 'https://www.tiktok.com/api/post/item_list/',
+    /** Comments list endpoint */
+    getComments: 'https://www.tiktok.com/api/comment/list/',
 };
